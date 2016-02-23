@@ -17,29 +17,21 @@
  
     <!-- button to Download App for new app users -->
     <form action="bloomsky://station/04E67683227B" target="_blank">
-        <input type="submit" value="Open MyBlue Device" />
+        <input type="submit" value="Open station (MyBlue)" />
     </form>
  
     <!-- button to Open App to specific screen for existing app users -->
     <form action="bloomsky://play/04E67683227B" target="_blank">
-        <input type="submit" value="Play MyBlue timelapse " />
+        <input type="text" name="url" value="http://storage.googleapis.com/bloomsky-video/eaB1rJytnZSmmpy0_8_2016-02-21.mp4"/>
+        <input type="submit" value="Play timelapse (MyBlue) 2016-02-21" />
     </form>
  
-
-    <form action="bloomsky://play/04E67683227B" target="_blank">
-       <input type="text" name="url" value="http://storage.googleapis.com/bloomsky-video/eaB1rJytnZSmmpy0_8_2016-02-21.mp4"/>
-        <input type="submit" value="Play timelapse url input" />
-    </form>
-    
     <form action="bloomsky://play/04E67693E17F" target="_blank">
         <input type="text" name="url" value="http://storage.googleapis.com/bloomsky-video/eaB1rJytnpS5mZy4_9_2016-02-21.mp4"/>
-        <input type="submit" value="Play timelapse Korera" />
+        <input type="submit" value="Play timelapse (Korea) 2016-02-21" />
     </form>
     
-    <form action="bloomsky://play/04E67683227B?url=http://storage.googleapis.com/bloomsky-video/eaB1rJytnZSmmpy0_8_2016-02-20.mp4" target="_blank">
-        <input type="submit" value="Play timelapse url param" />
-    </form>
-   
+    
     <a href="intent://deeplink/8/zhangsan/#Intent;scheme=com.bloomsky;package=com.airbnb.deeplinkdispatch.sample;end"> Bloomsky deeplink for chrome </a>
     <a href="bloomsky://play/04E67683227B"> A label open Bloomsky </a>
 </body>
