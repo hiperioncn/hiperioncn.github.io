@@ -4,10 +4,11 @@
 
 # Site
 title: Hiperion's Blog
-subtitle: Coding Anything
-description: I'm a good man
-author: Haibo Tian
-language: zh-CN
+subtitle: Anything is code.
+description: Coding Anything
+author: Hiperion
+#language: zh-CN
+language: zh-Hans
 timezone:
 
 # URL
@@ -63,7 +64,8 @@ pagination_dir: page
 # Extensions
 ## Plugins: http://hexo.io/plugins/
 ## Themes: http://hexo.io/themes/
-theme: maupassant
+# theme: maupassant
+theme: next
 #theme: landscape
 
 # Deployment
