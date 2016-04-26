@@ -51,14 +51,14 @@ pre {text-align:left;margin:0 auto;border:1px solid #888;padding:3px;width:400px
   });
 
 
-  var i = 10;
+  var i = 5;
   setInterval(function() {
       $('#shclFireballs').shCircleLoader('progress', i);
       if (i-- < 1) {
         $('#shclFireballs').shCircleLoader('destroy');
         window.location.href="public/index.html"
       };
-  }, 800);
+  }, 600);
   </script>
 
 </body>
