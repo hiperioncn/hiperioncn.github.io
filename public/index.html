@@ -279,8 +279,138 @@
             
               
                 
+                <a class="post-title-link" href="/public/2016/05/05/hiperioncn.github.io/" itemprop="url">
+                  Retrofit2 post 请求发送 json数据
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-05T18:43:29+08:00" content="2016-05-05">
+              2016-05-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/public/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/public/2016/05/05/hiperioncn.github.io/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/05/hiperioncn.github.io/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>先上代码，定义service<br><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">public</span> <span class="tag">interface</span> <span class="tag">TestApi</span> &#123;</span><br><span class="line">    <span class="comment">//第一种方式 注意此处使用的是Gson的JsonObject对象，而非系统自带JSONObject对象</span></span><br><span class="line">    <span class="variable">@POST</span>(<span class="string">"auth/login/"</span>)</span><br><span class="line">    Call&lt;JsonObject&gt; <span class="function">userLogin</span>(<span class="variable">@Body</span> JsonObject body );</span><br><span class="line">    <span class="comment">//第二种方式</span></span><br><span class="line">    <span class="variable">@POST</span>(<span class="string">"auth/login/"</span>)</span><br><span class="line">    Call&lt;JsonObject&gt; <span class="function">userLogin</span>(<span class="variable">@Body</span> User user );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>定义数据传输用User对象<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="built_in">String</span> username;</span><br><span class="line">      <span class="keyword">final</span> <span class="built_in">String</span> password;</span><br><span class="line"></span><br><span class="line">      User(<span class="built_in">String</span> username, <span class="built_in">String</span> password) &#123;</span><br><span class="line">          <span class="keyword">this</span>.username = username;</span><br><span class="line">          <span class="keyword">this</span>.password = password;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>定义拦截器，实现log打印，由于官方未实现log打印，所以可用okhttp的拦截器实现<br><figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor()<span class="comment">;</span></span><br><span class="line">        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>自定义GsonConverterFactory的相关转换规则<br><figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Gson</span> gson = new <span class="type">GsonBuilder</span><span class="literal">()</span></span><br><span class="line">        .setDateFormat(<span class="string">"yyyy-MM-dd'T'HH:mm:ssZ"</span>)</span><br><span class="line">        .create<span class="literal">()</span>;</span><br></pre></td></tr></table></figure></p>
+<p>创建OkHttpClient对象<br><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient <span class="keyword">client</span> = <span class="keyword">new</span> OkHttpClient.Builder().addInterceptor(interceptor).build();</span><br></pre></td></tr></table></figure></p>
+<p>创建Retrofit对象<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">String </span><span class="keyword">baseUrl </span>=<span class="string">"http://192.168.67.6:8000/"</span><span class="comment">;</span></span><br><span class="line"><span class="label">Retrofit</span> retrofit = new Retrofit.<span class="keyword">Builder()</span><br><span class="line"></span>        .<span class="keyword">baseUrl(baseUrl)</span><br><span class="line"></span>        .<span class="keyword">addConverterFactory(GsonConverterFactory.create(gson))</span><br><span class="line"></span>        .client(client)</span><br><span class="line">        .<span class="keyword">build();</span></span><br></pre></td></tr></table></figure></p>
+<p>使用retrofit创建相应service服务<br><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TestApi testApi = retrofit.<span class="keyword">create</span>(TestApi.<span class="keyword">class</span>);</span><br></pre></td></tr></table></figure></p>
+<p>使用第一种方式的创建Call对象<br><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> username =<span class="string">"Hiperion"</span>;</span><br><span class="line"><span class="built_in">String</span> password =<span class="string">"123456"</span>;</span><br><span class="line">JsonObject reqJsonObject = <span class="keyword">new</span> JsonObject();</span><br><span class="line">reqJsonObject.addProperty(<span class="string">"username"</span>, username);</span><br><span class="line">reqJsonObject.addProperty(<span class="string">"password"</span>, password);</span><br><span class="line"><span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span> = testApi.userLogin(reqJsonObject);</span><br></pre></td></tr></table></figure></p>
+<p>使用第二种方式的创建Call对象<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> username =<span class="string">"Hiperion"</span>;</span><br><span class="line"><span class="type">String</span> password =<span class="string">"123456"</span>;</span><br><span class="line"><span class="keyword">User</span> <span class="title">user</span> = new User(username,password);</span><br><span class="line">Call<span class="tag">&lt;JsonObject&gt;</span> call = testApi.userLogin(user);</span><br></pre></td></tr></table></figure></p>
+<p>异步执行Post请求，并打印结果<br><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span>.enqueue(<span class="keyword">new</span> Callback&lt;JsonObject&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="keyword">public</span> void onResponse(<span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span>, <span class="built_in">Response</span>&lt;JsonObject&gt; <span class="built_in">response</span>) &#123;</span><br><span class="line">                oLog.d(<span class="string">"onResponse:"</span> + <span class="built_in">response</span>.isSuccessful());</span><br><span class="line">                oLog.d(<span class="string">"url:"</span> + <span class="built_in">response</span>.raw().<span class="built_in">request</span>().url());</span><br><span class="line">                oLog.d(<span class="string">"message:"</span> + <span class="built_in">response</span>.message());</span><br><span class="line">                oLog.d(<span class="string">"headers:"</span> + <span class="built_in">response</span>.headers().toString());</span><br><span class="line">            &#125;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="keyword">public</span> void onFailure(<span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span>, Throwable t) &#123;</span><br><span class="line">                t.printStackTrace();</span><br><span class="line">                oLog.d(<span class="string">"onFailure"</span> + t.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure></p>
+<p>其它相关资料链接<br><br><a href="https://futurestud.io/blog/retrofit-send-objects-in-request-body" target="_blank" rel="external">Future Studio</a></p>
+
+          
+        
+      
+    </div>
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/public/2016/04/26/hexostudy/" itemprop="url">
-                  hexostudy
+                  Hexo学习
                 </a>
               
             
@@ -298,6 +428,25 @@
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/public/categories/工具/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -532,7 +681,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/public/archives">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -540,7 +689,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/public/categories">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -549,7 +698,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/public/tags">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -1,8 +1,8 @@
-title: hexostudy
+title: Hexo学习
 comments: true
 date: 2016-04-26 22:07:34
-tags:
-categories:
+tags: hexo
+categories: 工具
 ---
 Hexo安装及配置的相关文章链接
 =======
