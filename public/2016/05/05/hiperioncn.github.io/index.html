@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://hiperioncn.github.io/2016/05/05/hiperioncn.github.io/index.html">
 <meta property="og:site_name" content="Hiperion's Blog">
 <meta property="og:description" content="先上代码，定义service12345678public interface TestApi &amp;#123;    //第一种方式 注意此处使用的是Gson的JsonObject对象，而非系统自带JSONObject对象    @POST(&quot;auth/login/&quot;)    Call&amp;lt;JsonObject&amp;gt; userLogin(@Body JsonObject body );    //">
-<meta property="og:updated_time" content="2016-05-05T13:17:39.000Z">
+<meta property="og:updated_time" content="2016-05-05T14:03:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Retrofit2 post 请求发送 json数据">
 <meta name="twitter:description" content="先上代码，定义service12345678public interface TestApi &amp;#123;    //第一种方式 注意此处使用的是Gson的JsonObject对象，而非系统自带JSONObject对象    @POST(&quot;auth/login/&quot;)    Call&amp;lt;JsonObject&amp;gt; userLogin(@Body JsonObject body );    //">
@@ -353,7 +353,7 @@
 <p>使用第一种方式的创建Call对象<br><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> username =<span class="string">"Hiperion"</span>;</span><br><span class="line"><span class="built_in">String</span> password =<span class="string">"123456"</span>;</span><br><span class="line">JsonObject reqJsonObject = <span class="keyword">new</span> JsonObject();</span><br><span class="line">reqJsonObject.addProperty(<span class="string">"username"</span>, username);</span><br><span class="line">reqJsonObject.addProperty(<span class="string">"password"</span>, password);</span><br><span class="line"><span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span> = testApi.userLogin(reqJsonObject);</span><br></pre></td></tr></table></figure></p>
 <p>使用第二种方式的创建Call对象<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> username =<span class="string">"Hiperion"</span>;</span><br><span class="line"><span class="type">String</span> password =<span class="string">"123456"</span>;</span><br><span class="line"><span class="keyword">User</span> <span class="title">user</span> = new User(username,password);</span><br><span class="line">Call<span class="tag">&lt;JsonObject&gt;</span> call = testApi.userLogin(user);</span><br></pre></td></tr></table></figure></p>
 <p>异步执行Post请求，并打印结果<br><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span>.enqueue(<span class="keyword">new</span> Callback&lt;JsonObject&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="keyword">public</span> void onResponse(<span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span>, <span class="built_in">Response</span>&lt;JsonObject&gt; <span class="built_in">response</span>) &#123;</span><br><span class="line">                oLog.d(<span class="string">"onResponse:"</span> + <span class="built_in">response</span>.isSuccessful());</span><br><span class="line">                oLog.d(<span class="string">"url:"</span> + <span class="built_in">response</span>.raw().<span class="built_in">request</span>().url());</span><br><span class="line">                oLog.d(<span class="string">"message:"</span> + <span class="built_in">response</span>.message());</span><br><span class="line">                oLog.d(<span class="string">"headers:"</span> + <span class="built_in">response</span>.headers().toString());</span><br><span class="line">            &#125;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="keyword">public</span> void onFailure(<span class="keyword">Call</span>&lt;JsonObject&gt; <span class="keyword">call</span>, Throwable t) &#123;</span><br><span class="line">                t.printStackTrace();</span><br><span class="line">                oLog.d(<span class="string">"onFailure"</span> + t.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure></p>
-<p>其它相关资料链接<br><br><a href="https://futurestud.io/blog/retrofit-send-objects-in-request-body" target="_blank" rel="external">Future Studio</a></p>
+<p>其它相关资料链接<br><br><a href="https://futurestud.io/blog/retrofit-send-objects-in-request-body" target="_blank" rel="external">Future Studio</a><br><a href="https://www.metachris.com/2015/10/retrofit-2-samples/" target="_blank" rel="external">Chris Hager’s blog</a><br><a href="http://www.open-open.com/lib/view/open1453552147323.html" target="_blank" rel="external">Retrofit2.0使用</a><br><a href="http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0915/3460.html" target="_blank" rel="external">Retrofit 2.0：有史以来最大的改进</a><br><a href="http://bxbxbai.github.io/2015/12/13/retrofit2/" target="_blank" rel="external">Retrofit2 源码解析</a></p>
 
       
     </div>
@@ -390,6 +390,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/public/2016/05/20/hiperioncn.github.io/" rel="prev" title="Android x86模拟器安装apk时报错 INSTALL_FAILED_NO_MATCHING_ABIS">
+                Android x86模拟器安装apk时报错 INSTALL_FAILED_NO_MATCHING_ABIS <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -461,7 +465,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/public/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -478,7 +482,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/public/tags">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -501,7 +505,7 @@
               </span>
             
               <span class="links-of-author-item">
-                <a href="https://github.com/hiperioncn" target="_blank" title="Twitter">
+                <a href="https://twitter.com/hiperioncn" target="_blank" title="Twitter">
                   
                     <i class="fa fa-twitter"></i>
                   
@@ -510,11 +514,11 @@
               </span>
             
               <span class="links-of-author-item">
-                <a href="https://github.com/hiperioncn" target="_blank" title="Weibo">
+                <a href="http://blog.csdn.net/ocean20" target="_blank" title="Csdn">
                   
-                    <i class="fa fa-weibo"></i>
+                    <i class="fa fa-copyright"></i>
                   
-                  Weibo
+                  Csdn
                 </a>
               </span>
             

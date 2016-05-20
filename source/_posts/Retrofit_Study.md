@@ -96,3 +96,7 @@ call.enqueue(new Callback<JsonObject>() {
 ```
 其它相关资料链接</br>
 [Future Studio](https://futurestud.io/blog/retrofit-send-objects-in-request-body)
+[Chris Hager's blog](https://www.metachris.com/2015/10/retrofit-2-samples/)
+[Retrofit2.0使用](http://www.open-open.com/lib/view/open1453552147323.html)
+[Retrofit 2.0：有史以来最大的改进](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0915/3460.html)
+[Retrofit2 源码解析](http://bxbxbai.github.io/2015/12/13/retrofit2/)
