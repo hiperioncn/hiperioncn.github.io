@@ -279,6 +279,129 @@
             
               
                 
+                <a class="post-title-link" href="/public/2016/06/03/hiperioncn.github.io/" itemprop="url">
+                  Android 使用Glide时如何进行log打印
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-03T13:48:29+08:00" content="2016-06-03">
+              2016-06-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/public/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/public/2016/06/03/hiperioncn.github.io/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/03/hiperioncn.github.io/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Glide图片加载框架是Google官方推荐使用的。<br>默认情况下Glide是不打印log的。今天在调试一个demo时Glide无法正确载入图片，也不报错。<br>后来添加了Glide的log日志打印后发现自己犯了一个低级错误，由于是新创建的一个demo工程，未加入internet权限。</p>
+<p>Glide添加日志打印的方法：</p>
+<p>先实现一个RequestListener<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoggingListener</span>&lt;<span class="title">T</span>, <span class="title">R</span>&gt; <span class="keyword">implements</span> <span class="title">RequestListener</span>&lt;<span class="title">T</span>, <span class="title">R</span>&gt; </span>&#123;</span><br><span class="line">    <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">onException</span><span class="params">(Exception e, Object model, Target <span class="keyword">target</span>, <span class="keyword">boolean</span> isFirstResource)</span> </span>&#123;</span><br><span class="line">        android.util.Log.d(<span class="string">"GLIDE"</span>, String.format(Locale.ROOT,</span><br><span class="line">                <span class="string">"onException(%s, %s, %s, %s)"</span>, e, model, <span class="keyword">target</span>, isFirstResource), e);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">onResourceReady</span><span class="params">(Object resource, Object model, Target <span class="keyword">target</span>, <span class="keyword">boolean</span> isFromMemoryCache, <span class="keyword">boolean</span> isFirstResource)</span> </span>&#123;</span><br><span class="line">        android.util.Log.d(<span class="string">"GLIDE"</span>, String.format(Locale.ROOT,</span><br><span class="line">                <span class="string">"onResourceReady(%s, %s, %s, %s, %s)"</span>, resource, model, <span class="keyword">target</span>, isFromMemoryCache, isFirstResource));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后在Glide加载图片时加入该listener<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Glide.<span class="keyword">with</span>(<span class="keyword">this</span>)</span><br><span class="line">                .load(<span class="string">"http://inthecheesefactory.com/uploads/source/glidepicasso/cover.jpg"</span>)</span><br><span class="line">                .listener(<span class="keyword">new</span> LoggingListener&lt;<span class="built_in">String</span>, GlideDrawable&gt;())</span><br><span class="line">                .into(imageView);</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/public/2016/05/20/hiperioncn.github.io/" itemprop="url">
                   Android x86模拟器安装apk时报错 INSTALL_FAILED_NO_MATCHING_ABIS
                 </a>
@@ -352,7 +475,7 @@
             <p>AndroidStudio中的x86模拟器速度确实提高不少，但使用中也遇到一些问题。<br>目前开发的这个App使用了一个只兼容arm的so库，无法正常安装到模拟器上。</p>
 <p>安装时会出现 INSTALL_FAILED_NO_MATCHING_ABIS 的错误，这是由于使用了native libraries 。该native libraries 不支持当前的cpu的体系结构。我当前这个问题就是native libraries 不支持x86架构的cpu。<br>目前安卓模拟器的CPU/ABI一般有三种类型，INTEL X86,ARM,MIPS</p>
 <p>解决方法：<br>可以再build.gradle中的android{}中加入如下内容，</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">splits</span> &#123;</span><br><span class="line">        <span class="title">abi</span> &#123;</span><br><span class="line">            <span class="title">enable</span> <span class="built_in">true</span></span><br><span class="line">            reset()</span><br><span class="line">            include <span class="string">'x86'</span>, <span class="string">'armeabi-v7a'</span></span><br><span class="line">            universalApk <span class="built_in">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">splits</span> &#123;</span><br><span class="line">        <span class="title">abi</span> &#123;</span><br><span class="line">            <span class="title">enable</span> <span class="built_in">true</span></span><br><span class="line">            reset()</span><br><span class="line">            include <span class="string">'x86'</span>, <span class="string">'armeabi-v7a'</span></span><br><span class="line">            universalApk <span class="built_in">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>这样就可以正常安装到x86架构的模拟器上。<br>只限于调试界面在不兼容的模拟器上，不建议调试native libraries部分的代码。</p>
 
           
@@ -659,6 +782,128 @@
             
               
                 
+                <a class="post-title-link" href="/public/2016/04/26/bloomsky/" itemprop="url">
+                  Bloomsky
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-26T22:07:34+08:00" content="2016-04-26">
+              2016-04-26
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/public/categories/下载/" itemprop="url" rel="index">
+                    <span itemprop="name">下载</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/public/2016/04/26/bloomsky/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/26/bloomsky/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="BloomSky_apk_download_url_2C"><a href="#BloomSky_apk_download_url_2C" class="headerlink" title="BloomSky apk download url,"></a>BloomSky apk download url,</h1><ul>
+<li><a href="/uploads/bloomsky/app-release.apk">download apk</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/public/2015/12/27/hiperioncn.github.io/" itemprop="url">
                   Welcome 2016
                 </a>
@@ -805,7 +1050,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/public/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -813,7 +1058,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/public/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -822,7 +1067,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/public/tags">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

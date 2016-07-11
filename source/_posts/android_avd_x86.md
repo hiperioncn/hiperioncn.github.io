@@ -21,7 +21,7 @@ splits {
             enable true
             reset()
             include 'x86', 'armeabi-v7a'
-            universalApk true
+            universalApk false
         }
     }
 

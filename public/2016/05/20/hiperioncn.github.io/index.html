@@ -88,7 +88,7 @@
 <meta property="og:site_name" content="Hiperion's Blog">
 <meta property="og:description" content="AndroidStudio中的x86模拟器速度确实提高不少，但使用中也遇到一些问题。目前开发的这个App使用了一个只兼容arm的so库，无法正常安装到模拟器上。
 安装时会出现 INSTALL_FAILED_NO_MATCHING_ABIS 的错误，这是由于使用了native libraries 。该native libraries 不支持当前的cpu的体系结构。我当前这个问题就是native li">
-<meta property="og:updated_time" content="2016-05-20T02:19:30.000Z">
+<meta property="og:updated_time" content="2016-05-26T00:11:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android x86模拟器安装apk时报错 INSTALL_FAILED_NO_MATCHING_ABIS">
 <meta name="twitter:description" content="AndroidStudio中的x86模拟器速度确实提高不少，但使用中也遇到一些问题。目前开发的这个App使用了一个只兼容arm的so库，无法正常安装到模拟器上。
@@ -349,7 +349,7 @@
         <p>AndroidStudio中的x86模拟器速度确实提高不少，但使用中也遇到一些问题。<br>目前开发的这个App使用了一个只兼容arm的so库，无法正常安装到模拟器上。</p>
 <p>安装时会出现 INSTALL_FAILED_NO_MATCHING_ABIS 的错误，这是由于使用了native libraries 。该native libraries 不支持当前的cpu的体系结构。我当前这个问题就是native libraries 不支持x86架构的cpu。<br>目前安卓模拟器的CPU/ABI一般有三种类型，INTEL X86,ARM,MIPS</p>
 <p>解决方法：<br>可以再build.gradle中的android{}中加入如下内容，</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">splits</span> &#123;</span><br><span class="line">        <span class="title">abi</span> &#123;</span><br><span class="line">            <span class="title">enable</span> <span class="built_in">true</span></span><br><span class="line">            reset()</span><br><span class="line">            include <span class="string">'x86'</span>, <span class="string">'armeabi-v7a'</span></span><br><span class="line">            universalApk <span class="built_in">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">splits</span> &#123;</span><br><span class="line">        <span class="title">abi</span> &#123;</span><br><span class="line">            <span class="title">enable</span> <span class="built_in">true</span></span><br><span class="line">            reset()</span><br><span class="line">            include <span class="string">'x86'</span>, <span class="string">'armeabi-v7a'</span></span><br><span class="line">            universalApk <span class="built_in">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>这样就可以正常安装到x86架构的模拟器上。<br>只限于调试界面在不兼容的模拟器上，不建议调试native libraries部分的代码。</p>
 
       
@@ -387,6 +387,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/public/2016/06/03/hiperioncn.github.io/" rel="prev" title="Android 使用Glide时如何进行log打印">
+                Android 使用Glide时如何进行log打印 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -458,7 +462,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/public/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -466,7 +470,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/public/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -475,7 +479,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/public/tags">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
