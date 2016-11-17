@@ -1,0 +1,692 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/public/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/public/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/public/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="freeline," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Freeline是蚂蚁金服旗下一站式理财平台蚂蚁聚宝团队在Android平台上的量身定做的一个基于动态替换的编译方案，稳定性方面：完善的基线对齐，进程级别异常隔离机制。性能方面：内部采用了类似Facebook的开源工具buck的多工程多任务并发思想, 并对代码及资源编译流程做了深入的性能优化。具体原理请查看：https://yq.aliyun.com/articles/59122?spm=5176">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 秒级编译框架配置过程">
+<meta property="og:url" content="http://hiperioncn.github.io/2016/11/17/hiperioncn.github.io/index.html">
+<meta property="og:site_name" content="Hiperion's Blog">
+<meta property="og:description" content="Freeline是蚂蚁金服旗下一站式理财平台蚂蚁聚宝团队在Android平台上的量身定做的一个基于动态替换的编译方案，稳定性方面：完善的基线对齐，进程级别异常隔离机制。性能方面：内部采用了类似Facebook的开源工具buck的多工程多任务并发思想, 并对代码及资源编译流程做了深入的性能优化。具体原理请查看：https://yq.aliyun.com/articles/59122?spm=5176">
+<meta property="og:image" content="https://ooo.0o0.ooo/2016/11/17/582db94eaf31c.jpeg">
+<meta property="og:updated_time" content="2016-11-17T14:07:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 秒级编译框架配置过程">
+<meta name="twitter:description" content="Freeline是蚂蚁金服旗下一站式理财平台蚂蚁聚宝团队在Android平台上的量身定做的一个基于动态替换的编译方案，稳定性方面：完善的基线对齐，进程级别异常隔离机制。性能方面：内部采用了类似Facebook的开源工具buck的多工程多任务并发思想, 并对代码及资源编译流程做了深入的性能优化。具体原理请查看：https://yq.aliyun.com/articles/59122?spm=5176">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Android 秒级编译框架配置过程 | Hiperion's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4a3872f598ac72807ee63ca8a0fe57f8";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/public/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Hiperion's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Anything is code.</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/public/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/public/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/public/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/public/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-heartbeat fa-fw"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blogrolls">
+          <a href="/public/blogrolls" rel="section">
+            
+              <i class="menu-item-icon fa fa-link fa-fw"></i> <br />
+            
+            友情链接
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android 秒级编译框架配置过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-17T18:48:29+08:00" content="2016-11-17">
+              2016-11-17
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/public/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/public/2016/11/17/hiperioncn.github.io/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/17/hiperioncn.github.io/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Freeline是蚂蚁金服旗下一站式理财平台蚂蚁聚宝团队在Android平台上的量身定做的一个基于动态替换的编译方案，稳定性方面：完善的基线对齐，进程级别异常隔离机制。性能方面：内部采用了类似Facebook的开源工具buck的多工程多任务并发思想, 并对代码及资源编译流程做了深入的性能优化。<br>具体原理请查看：<a href="https://yq.aliyun.com/articles/59122?spm=5176.8091938.0.0.1Bw3mU" target="_blank" rel="external">https://yq.aliyun.com/articles/59122?spm=5176.8091938.0.0.1Bw3mU</a></p>
+<p>github: <a href="https://github.com/alibaba/freeline" target="_blank" rel="external">https://github.com/alibaba/freeline</a></p>
+<p>配置步骤：</p>
+<h6 id="1-_u914D_u7F6Eproject-level_u7684build-gradle_uFF0C_u52A0_u5165freeline-gradle_u7684_u4F9D_u8D56_uFF1A"><a href="#1-_u914D_u7F6Eproject-level_u7684build-gradle_uFF0C_u52A0_u5165freeline-gradle_u7684_u4F9D_u8D56_uFF1A" class="headerlink" title="1.配置project-level的build.gradle，加入freeline-gradle的依赖："></a>1.配置project-level的build.gradle，加入freeline-gradle的依赖：</h6><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">buildscript</span> &#123;</span><br><span class="line">    <span class="keyword">repositories</span> &#123;</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">dependencies</span> &#123;</span><br><span class="line">        <span class="keyword">classpath</span> <span class="string">'com.antfortune.freeline:gradle:0.8.2'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2-__u5728_u4F60_u7684_u4E3Bmodule_u7684build-gradle_u4E2D_uFF0C_u5E94_u7528freeline_u63D2_u4EF6_u7684_u4F9D_u8D56_uFF1A"><a href="#2-__u5728_u4F60_u7684_u4E3Bmodule_u7684build-gradle_u4E2D_uFF0C_u5E94_u7528freeline_u63D2_u4EF6_u7684_u4F9D_u8D56_uFF1A" class="headerlink" title="2. 在你的主module的build.gradle中，应用freeline插件的依赖："></a>2. 在你的主module的build.gradle中，应用freeline插件的依赖：</h6><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.antfortune.freeline'</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="3-__u5728_u547D_u4EE4_u884C_u6267_u884C_u4EE5_u4E0B_u547D_u4EE4_u6765_u4E0B_u8F7D_freeline__u7684_python__u548C_u4E8C_u8FDB_u5236_u4F9D_u8D56_u3002"><a href="#3-__u5728_u547D_u4EE4_u884C_u6267_u884C_u4EE5_u4E0B_u547D_u4EE4_u6765_u4E0B_u8F7D_freeline__u7684_python__u548C_u4E8C_u8FDB_u5236_u4F9D_u8D56_u3002" class="headerlink" title="3. 在命令行执行以下命令来下载 freeline 的 python 和二进制依赖。"></a>3. 在命令行执行以下命令来下载 freeline 的 python 和二进制依赖。</h6><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Windows[CMD]</span>: <span class="string">gradlew initFreeline</span></span><br><span class="line"><span class="attribute">Linux/Mac</span>: <span class="string">./gradlew initFreeline</span></span><br></pre></td></tr></table></figure>
+<p>对于国内的用户来说，如果你的下载的时候速度很慢，你也可以加上参数，执行gradlew initFreeline -Pmirror，这样就会从国内镜像地址来下载。</p>
+<p>你也可以使用参数-PfreelineVersion={your-specific-version}来下载特定版本的 freeline 依赖。</p>
+<p>如果你的工程结构较为复杂，在第一次使用freeline编译的时候报错了的话，你可以添加一些freeline提供的配置项，来适配你的工程。具体可以看Freeline DSL References。<a href="https://github.com/alibaba/freeline/wiki/Freeline-DSL-References" target="_blank" rel="external">https://github.com/alibaba/freeline/wiki/Freeline-DSL-References</a></p>
+<h6 id="4-_u5B89_u88C5Freeline_u63D2_u4EF6_uFF0C_u5728Android_Studio_u4E2D_uFF0C_u901A_u8FC7_u4EE5_u4E0B_u8DEF_u5F84Preferences__u2192_Plugins__u2192_Browse_repositories_uFF0C_u641C_u7D22_u201Cfreeline_u201D_uFF0C_u5E76_u5B89_u88C5-__u5B89_u88C5_u597D_u540E_u4F1A_u5728_u5DE5_u5177_u680F_u51FA_u73B0_u5982_u4E0B_u56FE_u6240_u793A_u6309_u94AE"><a href="#4-_u5B89_u88C5Freeline_u63D2_u4EF6_uFF0C_u5728Android_Studio_u4E2D_uFF0C_u901A_u8FC7_u4EE5_u4E0B_u8DEF_u5F84Preferences__u2192_Plugins__u2192_Browse_repositories_uFF0C_u641C_u7D22_u201Cfreeline_u201D_uFF0C_u5E76_u5B89_u88C5-__u5B89_u88C5_u597D_u540E_u4F1A_u5728_u5DE5_u5177_u680F_u51FA_u73B0_u5982_u4E0B_u56FE_u6240_u793A_u6309_u94AE" class="headerlink" title="4.安装Freeline插件，在Android Studio中，通过以下路径Preferences → Plugins → Browse repositories，搜索“freeline”，并安装. 安装好后会在工具栏出现如下图所示按钮"></a>4.安装Freeline插件，在Android Studio中，通过以下路径Preferences → Plugins → Browse repositories，搜索“freeline”，并安装. 安装好后会在工具栏出现如下图所示按钮</h6><p><img src="https://ooo.0o0.ooo/2016/11/17/582db94eaf31c.jpeg" alt=""></p>
+<h6 id="5-_u5728_u5DE5_u7A0B_u6839_u76EE_u5F55_u4E0B_u6267_u884C_u4E00_u6B21_u5168_u91CF_u7F16_u8BD1"><a href="#5-_u5728_u5DE5_u7A0B_u6839_u76EE_u5F55_u4E0B_u6267_u884C_u4E00_u6B21_u5168_u91CF_u7F16_u8BD1" class="headerlink" title="5.在工程根目录下执行一次全量编译"></a>5.在工程根目录下执行一次全量编译</h6><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python freeline<span class="class">.py</span> -f</span><br></pre></td></tr></table></figure>
+<p>！！！！！！！！！这步很重要，如果不执行，否则当你点击Freeline按钮时会报错,错误内容如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent <span class="operator"><span class="keyword">call</span> <span class="keyword">last</span>):</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"freeline.py"</span>, line <span class="number">49</span>, <span class="keyword">in</span> &lt;<span class="keyword">module</span>&gt;</span><br><span class="line">    <span class="keyword">main</span>()</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"freeline.py"</span>, line <span class="number">45</span>, <span class="keyword">in</span> <span class="keyword">main</span></span><br><span class="line">    freeline.<span class="keyword">call</span>(args=args)</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"freeline.py"</span>, line <span class="number">20</span>, <span class="keyword">in</span> <span class="keyword">call</span></span><br><span class="line">    <span class="keyword">self</span>.dispatcher.call_command(args)</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"/Users/hiperion/AndroidStudioProjects/Bloomsky/freeline/freeline_core/dispatcher.py"</span>, line <span class="number">57</span>, <span class="keyword">in</span> call_command</span><br><span class="line">    <span class="keyword">self</span>._exec_command(<span class="keyword">self</span>._command)</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"/Users/hiperion/AndroidStudioProjects/Bloomsky/freeline/freeline_core/dispatcher.py"</span>, line <span class="number">100</span>, <span class="keyword">in</span> _exec_command</span><br><span class="line">    <span class="string">'[WARNING] some important file missed, a clean build will be automatically executed.'</span>)</span><br><span class="line">  <span class="keyword">File</span> <span class="string">"/Users/hiperion/AndroidStudioProjects/Bloomsky/freeline/freeline_core/dispatcher.py"</span>, line <span class="number">125</span>, <span class="keyword">in</span> _retry_clean_build</span><br><span class="line">    <span class="keyword">self</span>._setup_clean_build_command(is_build_all_projects=<span class="literal">False</span>)</span><br><span class="line">TypeError: _setup_clean_build_command() takes exactly <span class="number">3</span> arguments (<span class="number">2</span> given)</span></span><br></pre></td></tr></table></figure>
+<p>我已经给官方提了issue，很快得到了响应，正在修复中<br><a href="https://github.com/alibaba/freeline/issues/308" target="_blank" rel="external">issue详细请点击这里</a></p>
+<h6 id="6-_u73B0_u5728_u5C31_u53EF_u4EE5_u70B9_u51FB_u5DE5_u5177_u680F_u5B89_u88C5_u597D_u7684_u63D2_u4EF6_u8FDB_u884C_u79D2_u7EA7_u589E_u91CF_u7F16_u8BD1_u4E86_u3002"><a href="#6-_u73B0_u5728_u5C31_u53EF_u4EE5_u70B9_u51FB_u5DE5_u5177_u680F_u5B89_u88C5_u597D_u7684_u63D2_u4EF6_u8FDB_u884C_u79D2_u7EA7_u589E_u91CF_u7F16_u8BD1_u4E86_u3002" class="headerlink" title="6.现在就可以点击工具栏安装好的插件进行秒级增量编译了。"></a>6.现在就可以点击工具栏安装好的插件进行秒级增量编译了。</h6><p>Enjoy!</p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/public/tags/freeline/" rel="tag">#freeline</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/public/2016/06/03/hiperioncn.github.io/" rel="next" title="Android 使用Glide时如何进行log打印">
+                <i class="fa fa-chevron-left"></i> Android 使用Glide时如何进行log打印
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/17/hiperioncn.github.io/"
+           data-title="Android 秒级编译框架配置过程" data-url="http://hiperioncn.github.io/2016/11/17/hiperioncn.github.io/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/images/avatar-grey.jpg"
+               alt="Hiperion" />
+          <p class="site-author-name" itemprop="name">Hiperion</p>
+          <p class="site-description motion-element" itemprop="description">Coding Anything</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/public/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/public/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/public/tags">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/hiperioncn" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/hiperioncn" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/ocean20" target="_blank" title="Csdn">
+                  
+                    <i class="fa fa-copyright"></i>
+                  
+                  Csdn
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-_u914D_u7F6Eproject-level_u7684build-gradle_uFF0C_u52A0_u5165freeline-gradle_u7684_u4F9D_u8D56_uFF1A"><span class="nav-number">1.</span> <span class="nav-text">1.配置project-level的build.gradle，加入freeline-gradle的依赖：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-__u5728_u4F60_u7684_u4E3Bmodule_u7684build-gradle_u4E2D_uFF0C_u5E94_u7528freeline_u63D2_u4EF6_u7684_u4F9D_u8D56_uFF1A"><span class="nav-number">2.</span> <span class="nav-text">2. 在你的主module的build.gradle中，应用freeline插件的依赖：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-__u5728_u547D_u4EE4_u884C_u6267_u884C_u4EE5_u4E0B_u547D_u4EE4_u6765_u4E0B_u8F7D_freeline__u7684_python__u548C_u4E8C_u8FDB_u5236_u4F9D_u8D56_u3002"><span class="nav-number">3.</span> <span class="nav-text">3. 在命令行执行以下命令来下载 freeline 的 python 和二进制依赖。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4-_u5B89_u88C5Freeline_u63D2_u4EF6_uFF0C_u5728Android_Studio_u4E2D_uFF0C_u901A_u8FC7_u4EE5_u4E0B_u8DEF_u5F84Preferences__u2192_Plugins__u2192_Browse_repositories_uFF0C_u641C_u7D22_u201Cfreeline_u201D_uFF0C_u5E76_u5B89_u88C5-__u5B89_u88C5_u597D_u540E_u4F1A_u5728_u5DE5_u5177_u680F_u51FA_u73B0_u5982_u4E0B_u56FE_u6240_u793A_u6309_u94AE"><span class="nav-number">4.</span> <span class="nav-text">4.安装Freeline插件，在Android Studio中，通过以下路径Preferences → Plugins → Browse repositories，搜索“freeline”，并安装. 安装好后会在工具栏出现如下图所示按钮</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#5-_u5728_u5DE5_u7A0B_u6839_u76EE_u5F55_u4E0B_u6267_u884C_u4E00_u6B21_u5168_u91CF_u7F16_u8BD1"><span class="nav-number">5.</span> <span class="nav-text">5.在工程根目录下执行一次全量编译</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#6-_u73B0_u5728_u5C31_u53EF_u4EE5_u70B9_u51FB_u5DE5_u5177_u680F_u5B89_u88C5_u597D_u7684_u63D2_u4EF6_u8FDB_u884C_u79D2_u7EA7_u589E_u91CF_u7F16_u8BD1_u4E86_u3002"><span class="nav-number">6.</span> <span class="nav-text">6.现在就可以点击工具栏安装好的插件进行秒级增量编译了。</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hiperion</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/public/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/public/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/public/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/public/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/public/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/public/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/public/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/public/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/public/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/public/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/public/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hiperion"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
